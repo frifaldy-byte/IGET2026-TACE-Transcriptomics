@@ -1,122 +1,213 @@
 # Pathway-Constrained Transcriptomic Endotyping and Interpretable Machine Learning for Pretreatment TACE Response in Hepatocellular Carcinoma
 
 **Conference:** IGET LIVE 2026  
-**Research area:** Interventional Oncology — Embolotherapy  
-**Study type:** Retrospective secondary transcriptomic analysis and computational model development  
-**Dataset:** [GEO GSE104580](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE104580)
+**Research category:** Embolotherapy  
+**Research domain:** Interventional Oncology, Computational Biology, and Machine Learning  
+**Study design:** Secondary analysis of publicly available transcriptomic data  
+**Primary dataset:** [GEO GSE104580](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE104580)  
+**Programming environment:** Python and Jupyter Notebook
+
+---
 
 ## 1. Project Overview
 
-Transarterial chemoembolization (TACE) is an established locoregional treatment for hepatocellular carcinoma (HCC). Treatment response varies among patients, motivating research into biological features that may help characterize response before intervention.
+Transarterial chemoembolization (TACE) is an established locoregional treatment for hepatocellular carcinoma (HCC). However, treatment response varies among patients, highlighting the importance of understanding the biological features associated with treatment outcomes.
 
-This project investigates a pathway-constrained computational framework integrating transcriptomic pathway activity, unsupervised molecular endotyping, statistical association testing, and interpretable machine learning. The objective is to identify pretreatment biological signals associated with TACE response and explore their potential for patient-level response stratification.
+This project investigates a pathway-constrained computational framework that integrates transcriptomic pathway scoring, unsupervised molecular endotyping, statistical association analysis, and interpretable machine learning to characterize pretreatment biological signals associated with TACE response.
 
-This is an exploratory computational study using publicly available transcriptomic data. The reported findings do not establish clinical validity or demonstrate that model-guided treatment improves patient outcomes.
+Using publicly available tumor transcriptomic data, the analysis examines whether predefined biological pathway activities can help characterize response heterogeneity and support patient-level response stratification.
 
-## 2. Research Objectives
+The framework combines pathway-level biological interpretation with predictive modeling and internal performance evaluation. Rather than relying exclusively on individual gene expression measurements, it summarizes expression profiles into biologically defined pathway features.
 
-1. Quantify predefined biological pathway activity from pretreatment tumor transcriptomic profiles.
-2. Investigate transcriptomic endotypes and evaluate their clustering stability.
-3. Assess associations between pathway activity and observed TACE response.
-4. Evaluate the discrimination, calibration, and interpretability of a regularized logistic regression model.
-5. Identify methodological requirements for future independent validation.
+The project is intended to support further research into transcriptomic response heterogeneity in HCC. Its findings remain exploratory and require methodological verification and independent external validation before any clinical application.
 
-## 3. Dataset and Study Population
+## 2. Background and Rationale
 
-The analysis uses the public Gene Expression Omnibus (GEO) dataset GSE104580.
+HCC exhibits substantial molecular heterogeneity, which may contribute to differences in treatment response. Transcriptomic profiling provides an opportunity to investigate biological programs associated with these differences.
 
-The submitted notebook reports the following study population:
+However, high-dimensional gene expression data present several analytical challenges:
+
+- A large number of molecular measurements relative to the available sample size.
+- Correlated expression patterns across genes and biological pathways.
+- Potential heterogeneity among patients with apparently similar clinical outcomes.
+- The need to distinguish predictive performance from biological interpretation.
+- The risk of optimistic performance estimates when preprocessing or model selection is not fully contained within validation procedures.
+
+Pathway-level analysis offers a biologically interpretable representation of transcriptomic data. Unsupervised clustering can then be used to explore molecular heterogeneity, while regularized logistic regression provides a relatively interpretable approach to response prediction.
+
+This project combines these complementary approaches within a computational workflow designed to investigate pathway-associated response patterns and evaluate their potential predictive relevance.
+
+## 3. Research Objectives
+
+The study addresses five objectives:
+
+1. To quantify predefined biological pathway activity from pretreatment HCC transcriptomic profiles.
+2. To investigate transcriptomic endotypes and assess their clustering stability.
+3. To identify pathways associated with observed TACE response using statistical association testing.
+4. To evaluate the discrimination and calibration of a regularized logistic regression model.
+5. To investigate patient-level response stratification and identify methodological priorities for future validation.
+
+## 4. Dataset and Study Population
+
+### 4.1 Data source
+
+The analysis uses the publicly available Gene Expression Omnibus (GEO) dataset GSE104580.
+
+**Dataset link:**  
+https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE104580
+
+The dataset provides the transcriptomic data used in the computational analysis. The notebook reports 147 HCC specimens classified according to treatment response.
+
+### 4.2 Reported study population
 
 | Characteristic | Reported value |
 |---|---:|
 | Total specimens | 147 |
 | Responders | 81 |
 | Nonresponders | 66 |
-| Hallmark pathways analyzed | 14 |
+| Predefined Hallmark pathways | 14 |
 | Transcriptomic endotypes | 2 |
 
-Probe-level expression measurements were mapped to gene-level expression using platform annotation. The resulting expression profiles were summarized into pathway-level features.
+These values are transcribed from the analysis outputs previously recorded in the notebook. The sample annotations, response labels, and associated publication should be checked against the original GEO records before claiming independent reproduction.
 
-**Data source:** [NCBI GEO — GSE104580](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE104580)
+### 4.3 Data preparation
 
-The response labels and sample counts should be verified against the original GEO sample metadata and associated publication before claiming independent reproduction. The original dataset should be obtained from GEO rather than redistributed without authorization.
+The implemented workflow includes probe-to-gene mapping using platform annotation, expression-data preparation, and pathway-level feature construction.
 
-## 4. Analytical Workflow
+The original deposited expression data may already have undergone preprocessing. The exact preprocessing history, including normalization and any batch correction, should therefore be documented from the original data source rather than assumed from the downstream analysis.
 
-The analysis follows these stages:
+The original GEO data should be obtained directly from the source and used in accordance with its applicable access conditions and terms. The repository does not need to redistribute the original dataset.
 
-1. **Data acquisition:** Obtain the transcriptomic dataset and inspect sample annotations.
-2. **Expression processing:** Map probes to genes and prepare the expression matrix.
-3. **Pathway scoring:** Estimate activity across 14 predefined Hallmark pathways using single-sample Gene Set Enrichment Analysis (ssGSEA).
-4. **Transcriptomic endotyping:** Apply consensus clustering with bootstrap resampling.
-5. **Cluster evaluation:** Assess stability using silhouette statistics and adjusted Rand indices.
-6. **Pathway association testing:** Compare responders and nonresponders using Mann–Whitney tests, rank-biserial correlations, and false discovery rate (FDR) correction.
-7. **Predictive modeling:** Fit L2-regularized logistic regression using an elastic-net hyperparameter-tuning framework.
-8. **Model evaluation:** Examine discrimination, calibration, permutation performance, coefficient stability, decision curves, and leave-one-pathway-out sensitivity.
-9. **Response stratification:** Summarize observed response rates across groups defined by out-of-fold predicted probabilities.
+## 5. Analytical Framework
 
-The accompanying Jupyter notebook contains the implemented computational workflow.
+The computational workflow comprises the following stages:
 
-## 5. Statistical and Machine-Learning Methods
+1. Data acquisition and sample annotation review.
+2. Probe-to-gene expression mapping and expression-matrix preparation.
+3. Single-sample pathway activity scoring.
+4. Unsupervised transcriptomic endotyping.
+5. Statistical pathway association analysis.
+6. Regularized logistic regression and hyperparameter tuning.
+7. Internal predictive performance evaluation.
+8. Robustness and sensitivity analyses.
+9. Patient-level response probability stratification.
 
-### 5.1 Pathway activity
+The following sections describe the principal analytical components.
 
-Predefined Hallmark gene sets were used to summarize transcriptomic profiles into pathway-level features. This approach provides a biologically interpretable representation of the expression data.
+## 6. Methods
 
-### 5.2 Unsupervised endotyping
+### 6.1 Transcriptomic preprocessing
 
-Consensus clustering with bootstrap resampling was used to investigate potential molecular subgroups. Clustering stability was assessed using adjusted Rand indices and silhouette statistics.
+Expression measurements were mapped from probe-level to gene-level representation using platform annotation.
 
-These clusters are exploratory molecular groupings and should not be interpreted as established clinical subtypes without independent replication.
+The analysis notebook also includes filtering and missing-value handling during preparation of the expression matrix and pathway-level features.
 
-### 5.3 Pathway association analysis
+For rigorous predictive validation, preprocessing operations that estimate parameters from the cohort should be fitted using the training data only and then applied to the corresponding validation data. Preprocessing performed across the full cohort before cross-validation may introduce optimistic bias, even when the preprocessing does not directly use outcome labels.
 
-Mann–Whitney tests were used to compare pathway activity between response groups. Rank-biserial correlation was used to quantify association, and FDR correction was applied to account for multiple pathway comparisons.
+### 6.2 Pathway activity estimation
 
-The direction of an effect must be interpreted according to the group coding and effect-size convention implemented in the notebook.
+Single-sample Gene Set Enrichment Analysis (ssGSEA) was used to summarize gene expression profiles into pathway-level activity scores.
 
-### 5.4 Predictive modeling
+The analysis considered 14 predefined Hallmark pathways. This feature representation was intended to reduce dimensionality while retaining biologically interpretable information.
 
-The primary classifier was regularized logistic regression, with hyperparameter tuning performed within the repeated stratified cross-validation framework.
+The resulting pathway scores served as inputs for downstream association analysis and predictive modeling.
 
-Reported performance measures include:
+### 6.3 Unsupervised transcriptomic endotyping
+
+Unsupervised consensus clustering with bootstrap resampling was used to investigate potential transcriptomic endotypes.
+
+Cluster stability was examined using:
+
+- Silhouette statistics.
+- Adjusted Rand indices.
+- Subsampling-based stability assessment.
+
+The resulting clusters represent exploratory transcriptomic groupings. Their existence does not establish clinically distinct subtypes, and any clinical interpretation requires independent replication.
+
+### 6.4 Statistical pathway association analysis
+
+Pathway activity was compared between responders and nonresponders using Mann–Whitney tests.
+
+Rank-biserial correlation was used to quantify the direction and magnitude of the association. False discovery rate (FDR) correction was applied to account for multiple pathway comparisons.
+
+The direction of each association must be interpreted according to the group coding and effect-size convention implemented in the notebook. Statistical association alone does not establish a causal relationship between a pathway and treatment response.
+
+### 6.5 Predictive modeling
+
+The primary predictive model was L2-regularized logistic regression within an elastic-net hyperparameter-tuning framework.
+
+The notebook implemented repeated stratified cross-validation with an outer five-fold split repeated ten times. Hyperparameter selection was performed within the cross-validation framework for the primary classifier.
+
+The pathway-level representation was used as the model input. No claim is made that the resulting model has been validated in an independent clinical cohort.
+
+### 6.6 Model performance evaluation
+
+The reported evaluation included the following metrics:
 
 - Area under the receiver operating characteristic curve (AUROC).
 - Area under the precision-recall curve (AUPRC).
-- Brier score and calibration slope.
-- Sensitivity, specificity, and balanced accuracy.
+- Brier score.
+- Calibration slope.
+- Sensitivity and specificity.
+- Balanced accuracy.
+
+AUROC summarizes discrimination across classification thresholds, while AUPRC evaluates precision-recall performance. The Brier score measures the accuracy of probabilistic predictions, and the calibration slope provides information about the relationship between predicted probabilities and observed outcomes.
+
+These metrics assess different aspects of model performance and should be interpreted together.
+
+### 6.7 Robustness and sensitivity analyses
+
+The notebook additionally includes:
+
 - Permutation testing.
-- Bootstrap coefficient stability.
+- Bootstrap coefficient stability analysis.
 - Decision-curve analysis.
 - Leave-one-pathway-out sensitivity analysis.
+- Patient-level stratification using out-of-fold predicted probabilities.
 
-The primary classifier uses pathway-level features. Internal cross-validation is not equivalent to external validation in an independent patient cohort.
+Some secondary analyses use hyperparameters selected on the full dataset rather than repeating the complete model-selection procedure within every resampling iteration. These analyses should therefore be interpreted as exploratory.
 
-## 6. Results
+For a rigorous permutation test, the complete model-selection process should be repeated for each permuted outcome. Confidence intervals should also be checked to establish whether they account for model fitting and selection uncertainty.
 
-**Important:** The values below are transcribed from the notebook outputs previously recorded for this project. They have not been independently reproduced from raw data during preparation of this README.
+### 6.8 Patient-level probability stratification
 
-### 6.1 Transcriptomic endotypes
+Out-of-fold predicted probabilities were used to group patients into three response-probability strata.
 
-Two transcriptomic endotypes were reported, with a mean subsampling adjusted Rand index of 0.883.
+This analysis examines whether observed response rates differ across groups defined by model predictions. The resulting groups are descriptive and should not be interpreted as validated clinical thresholds.
+
+Their generalizability and potential clinical utility require evaluation in independent data.
+
+## 7. Results
+
+**Reporting note:** The numerical values in this section were transcribed from the analysis outputs previously recorded in the notebook. They have not been independently reproduced from the raw dataset during preparation of this README.
+
+### 7.1 Transcriptomic endotypes
+
+The analysis identified two transcriptomic endotypes, with a reported mean subsampling adjusted Rand index of 0.883.
 
 | Endotype | Reported response rate |
 |---|---:|
 | Endotype 1 | 62.0% |
 | Endotype 2 | 48.7% |
 
-The difference in response rates was not statistically significant (P = 0.146). Therefore, these endotypes should not be described as independently established response classes.
+The difference in response rates was not statistically significant (P = 0.146).
 
-### 6.2 Pathway associations
+These findings suggest that the identified transcriptomic groupings should be treated as exploratory molecular endotypes rather than established response classes.
+
+### 7.2 Pathway associations
 
 | Pathway | Rank-biserial correlation | FDR-adjusted P value |
 |---|---:|---:|
 | Glycolysis | -0.545 | 1.97 × 10^-7 |
 | Oxidative phosphorylation | 0.282 | 9.36 × 10^-3 |
 
-The reported results indicate associations between pathway activity and treatment response. Biological interpretation of the association direction requires confirmation of the response-group coding used in the analysis.
+Glycolysis showed a reported rank-biserial correlation of -0.545, while oxidative phosphorylation showed a correlation of 0.282.
 
-### 6.3 Predictive performance
+Both associations were reported as statistically significant after FDR correction.
+
+The biological direction of these associations should be confirmed against the exact response-group coding and effect-size calculation in the notebook before assigning either pathway a specific interpretation in terms of response or nonresponse.
+
+### 7.3 Predictive model performance
 
 | Metric | Reported result |
 |---|---:|
@@ -130,109 +221,69 @@ The reported results indicate associations between pathway activity and treatmen
 | Specificity | 72.7% |
 | Balanced accuracy | 75.9% |
 
-These values describe internal model evaluation in the analyzed cohort. The confidence intervals and performance estimates should be interpreted cautiously until the full pipeline and uncertainty calculations have been rerun and checked.
+The reported internal evaluation indicates discriminatory performance within the analyzed cohort.
 
-### 6.4 Patient-level response stratification
+However, the confidence intervals and performance estimates remain provisional until the complete pipeline, preprocessing strategy, and uncertainty calculations have been rerun and checked. These values should not be interpreted as evidence of external generalizability or clinical readiness.
 
-The notebook reports response rates of 22.4%, 63.3%, and 79.6% across three groups formed from out-of-fold predicted probabilities (P = 3.53 × 10^-8).
+### 7.4 Patient-level response stratification
 
-This is an exploratory description of stratification within the analyzed cohort. It does not establish validated clinical thresholds or prove that the model can guide treatment decisions in other populations.
+The notebook reports the following observed response rates across three groups defined by out-of-fold predicted probabilities:
 
-## 7. Robustness and Model Evaluation
+| Probability group | Reported response rate |
+|---|---:|
+| Group 1 | 22.4% |
+| Group 2 | 63.3% |
+| Group 3 | 79.6% |
 
-The notebook includes several complementary evaluation procedures:
+The reported difference across groups had P = 3.53 × 10^-8.
 
-- Repeated stratified cross-validation with nested hyperparameter tuning for the primary classifier.
-- AUROC and AUPRC for discrimination.
-- Brier score and calibration slope for probabilistic prediction.
-- Permutation testing.
-- Bootstrap coefficient stability analysis.
-- Decision-curve analysis.
-- Leave-one-pathway-out sensitivity analysis.
-- Out-of-fold patient-level probability stratification.
+This finding describes response-rate differences within the analyzed cohort. It does not establish clinically actionable probability thresholds or demonstrate that model-guided treatment selection improves patient outcomes.
 
-Some preprocessing and secondary sensitivity analyses were performed outside the complete cross-validation loop or used hyperparameters selected on the full dataset. These choices may lead to optimistic estimates and should be addressed in a refined analysis.
+## 8. Interpretation of Findings
 
-In particular, a rigorous permutation procedure should repeat the full model-selection process within each permutation. Confidence intervals should also be checked to determine whether they account for model fitting and selection uncertainty.
+The analysis explores the relationship between pathway-level transcriptomic features and observed TACE response in HCC.
 
-## 8. Repository Contents
+Three observations are of particular interest:
 
-The repository is intended to contain the following materials as they are added:
+1. The clustering analysis identified two transcriptomic endotypes with a reported stability measure of 0.883, although their response rates were not significantly different.
+2. Glycolysis and oxidative phosphorylation showed reported associations with treatment response after FDR correction.
+3. The regularized logistic regression model demonstrated reported internal discrimination, while the out-of-fold probability groups showed differences in observed response rates.
 
-- Jupyter notebook containing the implemented analysis.
-- Figures illustrating pathway associations, transcriptomic endotypes, model performance, and response stratification.
-- Machine-readable summary tables.
-- Documentation of data provenance and methodological decisions.
-- Python dependency specifications and execution instructions.
+Together, these findings motivate further investigation of pathway-level biological features as candidate markers of response heterogeneity.
 
-Only files actually committed to the repository should be considered available. The original submission notebook should be preserved separately from revised versions.
+They do not establish causality, demonstrate prospective predictive performance, or support immediate clinical implementation.
 
-## 9. Reproducibility
+## 9. Reproducibility and Computational Environment
 
 The analysis was developed using Python and Jupyter Notebook.
 
-A reproducible release should document:
+A complete reproducibility release should document:
 
-1. Python and package versions.
-2. The exact GEO download and preprocessing procedures.
-3. Platform annotation and probe-to-gene mapping rules.
-4. Sample exclusions and response-label mapping.
-5. Random seeds and cross-validation configuration.
-6. The commands required to execute the notebook.
-7. The provenance of all figures, tables, and reported metrics.
+- Python version and package versions.
+- Exact dataset retrieval procedure.
+- Platform annotation and probe-to-gene mapping rules.
+- Expression preprocessing and missing-value handling.
+- Pathway definitions and scoring configuration.
+- Response-label mapping and sample exclusions.
+- Random seeds and cross-validation settings.
+- Model hyperparameter search space.
+- The commands needed to execute the notebook from a clean environment.
+- The provenance of reported metrics, tables, and figures.
 
-Uploading a notebook does not by itself demonstrate reproducibility. Reproduction requires running the documented workflow from a clean environment and checking the resulting outputs.
+The notebook is provided as the primary record of the implemented analysis. A successful upload alone does not demonstrate reproducibility; the workflow must be rerun and the outputs compared with the reported results.
 
-## 10. Limitations
+## 10. Repository Structure
 
-Several limitations should be considered:
+The repository is intended to organize the analysis and supporting materials as follows:
 
-- The study uses retrospective public transcriptomic data.
-- The reported analysis includes 147 specimens and requires validation in additional cohorts.
-- Internal cross-validation does not establish external generalizability.
-- Cohort-level preprocessing or imputation before cross-validation may introduce optimistic bias.
-- Some secondary analyses do not repeat all model-selection steps within each resampling iteration.
-- Predicted-probability groups are descriptive and are not validated clinical thresholds.
-- Transcriptomic associations do not establish causality or demonstrate treatment benefit.
-- Response-label mapping and reported performance should be independently checked against the original data and analysis code.
-
-These limitations motivate further methodological refinement and independent evaluation.
-
-## 11. Future Directions
-
-Future work should prioritize:
-
-1. Verifying sample annotations and response labels against the original GEO records and source publication.
-2. Reassessing preprocessing and imputation within training folds where appropriate.
-3. Repeating permutation tests with the full model-selection procedure.
-4. Recalculating confidence intervals using a clearly documented uncertainty-estimation procedure.
-5. Evaluating performance in an independent cohort.
-6. Assessing whether transcriptomic features add value beyond established clinical predictors.
-
-## 12. Clinical Interpretation
-
-This project investigates whether pretreatment transcriptomic pathway features may help characterize biological variation associated with TACE response in HCC.
-
-The framework remains a research-stage computational analysis. It is not a clinically validated prediction tool and should not be used to determine treatment eligibility or replace multidisciplinary clinical decision-making.
-
-## 13. Data Availability
-
-The primary dataset is publicly available through NCBI GEO:
-
-- **GSE104580:** https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE104580
-
-The notebook and supporting materials are made available through this repository as they are committed.
-
-## 14. Research Integrity and AI-Assisted Coding
-
-This repository documents the computational workflow, reported outputs, data source, and methodological limitations of the project.
-
-Any AI-assisted coding or debugging should be disclosed in accordance with the relevant conference, institutional, and publication policies. Scientific claims and numerical results remain the responsibility of the researcher and should be verified against the executable analysis.
-
-## 15. Citation
-
-When referencing this project, cite the repository using its final URL and the specific version or commit used. Cite the original GEO-associated publication separately using the bibliographic information provided by NCBI GEO.
-
----
-
-**Disclaimer:** This repository presents research-stage computational analyses. The reported findings do not establish prospective clinical effectiveness. Independent external validation is required before any clinical application.
+```text
+IGET2026-TACE-Transcriptomics/
+├── README.md
+├── .gitignore
+├── notebooks/
+│   ├── IGET2026_submission_original.ipynb
+│   └── IGET2026_revised.ipynb
+├── figures/
+├── results/
+├── docs/
+└── requirements.txt

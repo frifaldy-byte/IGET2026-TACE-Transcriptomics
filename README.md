@@ -5,7 +5,7 @@
 **Research domain:** Interventional Oncology, Computational Biology, and Machine Learning  
 **Study design:** Secondary analysis of publicly available transcriptomic data  
 **Primary dataset:** [GEO GSE104580](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE104580)  
-**Programming environment:** Python and Jupyter Notebook
+**Programming environment:** Python, Jupyter Notebook
 
 ---
 
